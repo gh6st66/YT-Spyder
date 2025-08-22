@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Video, VideoStatus } from '../types';
 import { CitationIcon, CsvIcon, MoreVerticalIcon } from './icons';
@@ -18,7 +17,7 @@ const TagButton: React.FC<{
     const isActive = currentStatus === value;
     const baseClasses = `px-3 py-1 text-sm rounded-full cursor-pointer transition-colors border`;
     const activeClasses = `bg-${color}-500 text-white border-${color}-500`;
-    const inactiveClasses = `bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700`;
+    const inactiveClasses = `bg-transparent border-brand-outline text-brand-on-surface/80 hover:bg-white/10`;
     return (
         <button onClick={() => onClick(isActive ? VideoStatus.None : value)} className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}>
             {label}
@@ -70,18 +69,18 @@ const ActionsMenu: React.FC<{ video: Video }> = ({ video }) => {
 
     return (
         <div className="relative" ref={menuRef}>
-            <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-full hover:bg-brand-medium-dark">
+            <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-full hover:bg-white/10">
                 <MoreVerticalIcon className="w-5 h-5" />
             </button>
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-brand-medium-dark rounded-md shadow-lg z-10">
-                    <button onClick={() => copyToClipboard(getCitation('APA'), 'APA Citation')} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">
+                <div className="absolute right-0 mt-2 w-48 bg-brand-surface rounded-md shadow-xl z-10">
+                    <button onClick={() => copyToClipboard(getCitation('APA'), 'APA Citation')} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-brand-on-surface hover:bg-white/10">
                         <CitationIcon className="w-4 h-4"/> Copy APA
                     </button>
-                    <button onClick={() => copyToClipboard(getCitation('MLA'), 'MLA Citation')} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">
+                    <button onClick={() => copyToClipboard(getCitation('MLA'), 'MLA Citation')} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-brand-on-surface hover:bg-white/10">
                         <CitationIcon className="w-4 h-4"/> Copy MLA
                     </button>
-                    <button onClick={exportToCsv} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">
+                    <button onClick={exportToCsv} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-brand-on-surface hover:bg-white/10">
                         <CsvIcon className="w-4 h-4"/> Export CSV
                     </button>
                 </div>
@@ -101,25 +100,25 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onVideoChange }) =>
     }, [video.id, onVideoChange]);
     
     return (
-        <div className="bg-brand-light-dark p-4 rounded-lg flex flex-col gap-3">
+        <div className="bg-brand-surface p-4 rounded-lg flex flex-col gap-3 shadow-md">
             <div className="relative aspect-video bg-black rounded-md flex items-center justify-center">
                 <img src={`https://picsum.photos/seed/${video.id}/400/225`} alt="Video thumbnail" className="rounded-md w-full h-full object-cover"/>
                 <span className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">{video.duration}</span>
             </div>
 
             <div className="flex justify-between items-start">
-                <h3 className="font-bold text-lg leading-tight pr-2">{video.title}</h3>
+                <h3 className="font-medium text-lg leading-tight pr-2 text-brand-on-surface">{video.title}</h3>
                 <ActionsMenu video={video} />
             </div>
 
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-brand-on-surface/60">
                 <span>{video.channel}</span> &bull; <span>{video.views}</span> &bull; <span>{video.uploadDate}</span>
             </div>
             
-            <p className="text-gray-300 text-sm">{video.summary}</p>
+            <p className="text-brand-on-surface/80 text-sm">{video.summary}</p>
             
             <div>
-                <h4 className="font-semibold text-gray-200 text-sm mb-2">Key Moments</h4>
+                <h4 className="font-medium text-brand-on-surface text-sm mb-2">Key Moments</h4>
                 <div className="flex flex-col gap-1 text-sm">
                     {video.keyMoments.map((moment, index) => (
                         <div key={index} className="text-brand-accent hover:underline cursor-pointer">
@@ -129,7 +128,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onVideoChange }) =>
                 </div>
             </div>
 
-            <div className="border-t border-brand-medium-dark pt-3">
+            <div className="border-t border-brand-outline pt-3">
                 <div className="flex items-center gap-2 mb-3">
                     <TagButton label="Use" value={VideoStatus.Use} currentStatus={video.status} onClick={handleStatusChange} color="green" />
                     <TagButton label="Review" value={VideoStatus.Review} currentStatus={video.status} onClick={handleStatusChange} color="yellow" />
@@ -139,7 +138,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onVideoChange }) =>
                     value={video.notes}
                     onChange={handleNotesChange}
                     placeholder="Add your notes here..."
-                    className="w-full bg-brand-medium-dark border border-gray-600 rounded-md p-2 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-accent resize-none h-20"
+                    className="w-full bg-brand-dark border-b-2 border-brand-outline rounded-t-md p-2 text-sm text-brand-on-surface focus:outline-none focus:border-brand-accent resize-none h-20"
                 />
             </div>
         </div>

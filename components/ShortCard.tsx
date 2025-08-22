@@ -1,4 +1,3 @@
-
 import React, { useCallback } from 'react';
 import { Short, VideoStatus } from '../types';
 
@@ -22,18 +21,18 @@ export const ShortCard: React.FC<ShortCardProps> = ({ short, onShortChange }) =>
             case VideoStatus.Use: return 'border-green-500';
             case VideoStatus.Review: return 'border-yellow-500';
             case VideoStatus.Skip: return 'border-red-500';
-            default: return 'border-brand-medium-dark';
+            default: return 'border-brand-outline';
         }
     };
     
     return (
-        <div className={`bg-brand-light-dark rounded-lg flex flex-col border-2 ${getBorderColor()} transition-colors`}>
+        <div className={`bg-brand-surface rounded-lg flex flex-col border-2 ${getBorderColor()} transition-colors shadow-md`}>
              <div className="relative aspect-[9/16] bg-black rounded-t-md flex items-center justify-center">
                  <img src={`https://picsum.photos/seed/${short.id}/270/480`} alt="Short thumbnail" className="rounded-t-md w-full h-full object-cover"/>
             </div>
             <div className="p-2 flex flex-col flex-grow gap-2">
-                <p className="font-semibold text-sm leading-tight text-brand-light flex-grow">{short.title}</p>
-                <div className="text-xs text-gray-400">
+                <p className="font-medium text-sm leading-tight text-brand-on-surface flex-grow">{short.title}</p>
+                <div className="text-xs text-brand-on-surface/60">
                     <p>{short.channel}</p>
                     <p>{short.views}</p>
                 </div>
@@ -46,7 +45,7 @@ export const ShortCard: React.FC<ShortCardProps> = ({ short, onShortChange }) =>
                     value={short.notes}
                     onChange={handleNotesChange}
                     placeholder="Notes..."
-                    className="w-full bg-brand-medium-dark border border-gray-600 rounded p-1 text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-accent resize-none h-12"
+                    className="w-full bg-brand-dark border-b-2 border-brand-outline rounded-t-md p-1 text-xs text-brand-on-surface focus:outline-none focus:border-brand-accent resize-none h-12"
                 />
             </div>
         </div>

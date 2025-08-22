@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { FilterState } from '../types';
 import { DURATION_OPTIONS, UPLOAD_DATE_OPTIONS, MIN_VIEWS_OPTIONS } from '../constants';
+import { ChevronDownIcon } from './icons';
 
 interface FilterPanelProps {
     filters: FilterState;
@@ -14,17 +14,20 @@ const FilterSelect: React.FC<{
     options: { value: string; label: string }[];
     onChange: (value: string) => void;
 }> = ({ label, value, options, onChange }) => (
-    <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+    <div className="relative">
+        <label className="block text-sm font-medium text-brand-on-surface/80 mb-1">{label}</label>
         <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full bg-brand-light-dark border border-brand-medium-dark text-brand-light rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-brand-accent"
+            className="appearance-none w-full bg-brand-surface border-b-2 border-brand-outline text-brand-on-surface rounded-t-md p-2 focus:outline-none focus:border-brand-accent"
         >
             {options.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
             ))}
         </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 top-6 flex items-center px-2 text-brand-on-surface/60">
+            <ChevronDownIcon className="h-5 w-5" />
+        </div>
     </div>
 );
 
@@ -35,8 +38,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChang
     };
 
     return (
-        <div className="bg-brand-light-dark p-4 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-brand-surface p-4 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FilterSelect
                     label="Duration"
                     value={filters.duration}

@@ -1,7 +1,6 @@
-
 import { Project } from '../types';
 
-const PROJECTS_KEY = 'ytSpyderProjects';
+const PROJECTS_KEY = 'videoSpyderProjects';
 
 export const getProjects = (): Project[] => {
     try {

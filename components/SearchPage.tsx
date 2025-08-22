@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { FilterState, Video, Short, VideoStatus, Project } from '../types';
 import { fetchYouTubeData } from '../services/geminiService';
@@ -11,6 +10,7 @@ import { Banner } from './Banner';
 import { SaveIcon, CloseIcon } from './icons';
 import { INITIAL_FILTER_STATE } from '../constants';
 import { useProjectContext } from '../context/ProjectContext';
+import { Modal } from './Modal';
 
 interface SearchPageProps {
     activeProject: Project | null;
@@ -25,6 +25,9 @@ export const SearchPage: React.FC<SearchPageProps> = ({ activeProject, clearActi
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+    const [newProjectName, setNewProjectName] = useState('');
+
     const { addProject, updateProject } = useProjectContext();
 
     useEffect(() => {
@@ -36,7 +39,6 @@ export const SearchPage: React.FC<SearchPageProps> = ({ activeProject, clearActi
             setError(null);
             setIsLoading(false);
         } else {
-            // Reset state when there's no active project
             setQuery('');
             setFilters(INITIAL_FILTER_STATE);
             setVideos([]);
@@ -48,7 +50,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({ activeProject, clearActi
         if (!searchQuery.trim()) return;
         setIsLoading(true);
         setError(null);
-        clearActiveProject(); // Clear any loaded project when a new search starts
+        clearActiveProject();
         try {
             const data = await fetchYouTubeData(searchQuery);
             setVideos(data.videos.map(v => ({ ...v, type: 'video', status: VideoStatus.None, notes: '' })));
@@ -60,28 +62,34 @@ export const SearchPage: React.FC<SearchPageProps> = ({ activeProject, clearActi
         }
     };
     
-    const handleSaveProject = () => {
-        const projectName = prompt("Enter a name for this project:", activeProject?.name || query);
-        if (projectName) {
-            const projectData = {
-                name: projectName,
-                query,
-                filters,
-                videos,
-                shorts,
-            };
-            if (activeProject) {
-                updateProject({ ...activeProject, ...projectData });
-                alert(`Project "${projectName}" updated!`);
-            } else {
-                const newProject = addProject(projectData);
-                // Optionally load the new project as active, though it's already displayed
-                // This might be useful if the UX flow requires it
-                alert(`Project "${projectName}" saved!`);
-            }
-        }
+    const handleOpenSaveModal = () => {
+        setNewProjectName(activeProject?.name || query);
+        setIsSaveModalOpen(true);
     };
 
+    const handleConfirmSave = () => {
+        if (!newProjectName.trim()) {
+            alert("Project name cannot be empty.");
+            return;
+        }
+        
+        const projectData = {
+            name: newProjectName.trim(),
+            query,
+            filters,
+            videos,
+            shorts,
+        };
+
+        if (activeProject) {
+            updateProject({ ...activeProject, ...projectData });
+            alert(`Project "${projectData.name}" updated!`);
+        } else {
+            addProject(projectData);
+            alert(`Project "${projectData.name}" saved!`);
+        }
+        setIsSaveModalOpen(false);
+    };
 
     const updateItem = <T extends Video | Short,>(
       items: T[], 
@@ -131,11 +139,11 @@ export const SearchPage: React.FC<SearchPageProps> = ({ activeProject, clearActi
             <FilterPanel filters={filters} onFilterChange={setFilters} />
 
             {activeProject && (
-                <div className="my-4 p-3 bg-brand-light-dark rounded-lg flex justify-between items-center">
+                <div className="my-4 p-3 bg-brand-surface rounded-lg flex justify-between items-center">
                     <p className="text-lg">
-                        <span className="font-semibold">Loaded Project:</span> {activeProject.name}
+                        <span className="font-medium">Loaded Project:</span> {activeProject.name}
                     </p>
-                    <button onClick={clearActiveProject} className="p-2 rounded-full hover:bg-brand-medium-dark transition-colors">
+                    <button onClick={clearActiveProject} className="p-2 rounded-full hover:bg-white/10 transition-colors">
                         <CloseIcon className="w-6 h-6" />
                     </button>
                 </div>
@@ -147,16 +155,16 @@ export const SearchPage: React.FC<SearchPageProps> = ({ activeProject, clearActi
             {!isLoading && !error && hasResults && (
                 <>
                     <div className="flex justify-between items-center mt-6 mb-4">
-                        <h2 className="text-2xl font-semibold">Results</h2>
-                        <button onClick={handleSaveProject} className="flex items-center gap-2 bg-brand-accent text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition-colors">
+                        <h2 className="text-2xl font-medium">Results</h2>
+                        <button onClick={handleOpenSaveModal} className="flex items-center gap-2 bg-brand-accent text-white font-medium uppercase text-sm tracking-wider py-2 px-4 rounded-lg shadow-md hover:bg-brand-accent-dark transition-all duration-300">
                             <SaveIcon className="w-5 h-5" />
-                            {activeProject ? 'Update Project' : 'Save as Project'}
+                            {activeProject ? 'Update Project' : 'Save Project'}
                         </button>
                     </div>
 
                     {filteredResults.videos.length > 0 && (
                         <section>
-                            <h3 className="text-xl font-bold text-gray-300 border-b border-brand-medium-dark pb-2 mb-4">Videos</h3>
+                            <h3 className="text-xl font-medium text-brand-on-surface/80 border-b border-brand-outline pb-2 mb-4">Videos</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {filteredResults.videos.map(video => <VideoCard key={video.id} video={video} onVideoChange={handleVideoChange} />)}
                             </div>
@@ -165,7 +173,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({ activeProject, clearActi
                     
                     {filteredResults.shorts.length > 0 && (
                         <section className="mt-8">
-                            <h3 className="text-xl font-bold text-gray-300 border-b border-brand-medium-dark pb-2 mb-4">Shorts</h3>
+                            <h3 className="text-xl font-medium text-brand-on-surface/80 border-b border-brand-outline pb-2 mb-4">Shorts</h3>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                                 {filteredResults.shorts.map(short => <ShortCard key={short.id} short={short} onShortChange={handleShortChange} />)}
                             </div>
@@ -175,11 +183,39 @@ export const SearchPage: React.FC<SearchPageProps> = ({ activeProject, clearActi
             )}
             
             {!isLoading && !error && !hasResults && !activeProject && (
-                <div className="text-center text-gray-400 mt-16">
+                <div className="text-center text-brand-on-surface/60 mt-16">
                     <p className="text-2xl">Start your research journey.</p>
                     <p>Enter a topic above to discover and analyze YouTube content.</p>
                 </div>
             )}
+
+            <Modal isOpen={isSaveModalOpen} onClose={() => setIsSaveModalOpen(false)} title={activeProject ? 'Update Project' : 'Save New Project'}>
+                <div>
+                    <label htmlFor="projectName" className="text-sm text-brand-on-surface/80">Project Name</label>
+                    <input
+                        id="projectName"
+                        type="text"
+                        value={newProjectName}
+                        onChange={(e) => setNewProjectName(e.target.value)}
+                        placeholder="Enter project name"
+                        className="w-full mt-1 bg-brand-dark border-b-2 border-brand-outline text-brand-on-surface rounded-t-md p-3 focus:outline-none focus:border-brand-accent"
+                    />
+                </div>
+                <div className="flex justify-end gap-2 mt-6">
+                    <button 
+                        onClick={() => setIsSaveModalOpen(false)}
+                        className="px-4 py-2 rounded-md text-brand-accent font-medium uppercase text-sm hover:bg-brand-accent/10"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleConfirmSave}
+                        className="px-4 py-2 rounded-md text-brand-accent font-medium uppercase text-sm hover:bg-brand-accent/10"
+                    >
+                        Save
+                    </button>
+                </div>
+            </Modal>
         </div>
     );
 };

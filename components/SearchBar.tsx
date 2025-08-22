@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SearchIcon } from './icons';
 
@@ -26,11 +25,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, initialQuery }) 
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search for a topic (e.g., 'cold fusion explained')"
-                className="flex-grow bg-brand-light-dark border border-brand-medium-dark text-brand-light placeholder-gray-500 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                className="flex-grow bg-brand-surface border-b-2 border-brand-outline text-brand-on-surface placeholder-brand-on-surface/50 rounded-t-lg p-3 focus:outline-none focus:border-brand-accent"
             />
             <button
                 type="submit"
-                className="bg-brand-accent text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-2"
+                className="bg-brand-accent text-white font-medium uppercase text-sm tracking-wider h-12 px-6 rounded-lg shadow-md hover:bg-brand-accent-dark transition-all duration-300 flex items-center gap-2"
             >
                 <SearchIcon className="w-5 h-5"/>
                 Search
